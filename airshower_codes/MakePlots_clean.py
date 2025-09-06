@@ -21,6 +21,14 @@ from calendar import month_abbr
 
 # In[2]:
 
+def Preliminary2():
+    prelim = ROOT.TLatex(0.935, 0.95, "NOvA Preliminary")
+    prelim.SetTextColor(ROOT.kBlue)
+    prelim.SetNDC()           # use normalized device coordinates
+    prelim.SetTextSize(2.0/30.0)
+    prelim.SetTextAlign(32)
+    prelim.Draw()
+
 Multiplicity = ROOT.TH1D("Multiplicity", "Multiplicity distribution (opposite through-goers); Tracks per event; Counts", 200, 0, 400)
 TrackDensity = ROOT.TH1D("TrackDensity", "Track density distribution (all tracks); Track density (m^{-2})", 50, 0, 1)
 XsecAltAz = ROOT.TH2D("XsecAltAz", "Cross section vs Altitude, Azimuth; Azimuth; Altitude", 360, 0, 360, 90, 0, 90)
@@ -49,9 +57,9 @@ Alt_HD = ROOT.TH1D("Alt_HD", "Altitude | Uniform Showers (HD);Altitide Angle;Eve
 
 RA_BU = ROOT.TH1D("RA_BU","Right Ascension | Non Uniform showers;Right Ascension (deg);Events", 24, -180, 180)
 RA_alt_l20 = ROOT.TH1D("RA_GU_alt_l20","Right Ascension | Non Uniform showers;Right Ascension (deg);Events", 24, -180, 180)
-RA_LD = ROOT.TH1D("RA_LD","Right Ascension | Uniform showers (LD);Right Ascension (deg);Events", 24, -180, 180)
-RA_MD = ROOT.TH1D("RA_MD","Right Ascension | Uniform showers (MD);Right Ascension (deg);Events", 24, -180, 180)
-RA_HD = ROOT.TH1D("RA_HD","Right Ascension | Uniform showers (HD);Right Ascension (deg);Events", 24, -180, 180)
+RA_LD = ROOT.TH1D("RA_LD"," ;Right Ascension (deg);Events", 24, -180, 180)
+RA_MD = ROOT.TH1D("RA_MD"," ;Right Ascension (deg);Events", 24, -180, 180)
+RA_HD = ROOT.TH1D("RA_HD"," ;Right Ascension (deg);Events", 24, -180, 180)
 
 hEvts_Month = ROOT.TH1D("hEvts_Month","Events by Month | All;Month;Events",108,0,108)
 hEvtsHD_Month = ROOT.TH1D("hEvtsHD_Month","Events by Month | High Density;Month;Events",108,0,108)
@@ -111,7 +119,7 @@ for i in range(0,90):
         XsecAltAz.Fill(j,i,axsec)
 
 # Loop through files
-file_path = glob.glob("/home/aklima/MSAnalysis/Codes/TextAll/*_SubrunInfo.txt")
+file_path = glob.glob("/home/aklima/MSAnalysis/Codes/ntuples_text/*_SubrunInfo.txt")
 for n in range(len(file_path)):
 #for n in range(0,500):
     base_name = os.path.basename(file_path[n])
@@ -120,11 +128,11 @@ for n in range(len(file_path)):
     file_base_name = file_base_name[0:file_base_name.find("_SubrunInfo")]
     print("Parsing file "+file_base_name)
 
-    si_file_path = f"/home/aklima/MSAnalysis/Codes/TextAll/{file_base_name}_SubrunInfo.txt"
+    si_file_path = f"/home/aklima/MSAnalysis/Codes/ntuples_text/{file_base_name}_SubrunInfo.txt"
     if os.path.getsize(si_file_path) == 0:
         #print(f"SubrunInfo file {si_file_path} is empty. Skipping...")
         continue
-    run_si, subrun_si, start_si, stop_si = np.loadtxt(f"/home/aklima/MSAnalysis/Codes/TextAll/{file_base_name}_SubrunInfo.txt", unpack=True, ndmin=2)
+    run_si, subrun_si, start_si, stop_si = np.loadtxt(f"/home/aklima/MSAnalysis/Codes/ntuples_text/{file_base_name}_SubrunInfo.txt", unpack=True, ndmin=2)
 
     tz = pytz.timezone('America/Chicago')
     
@@ -146,11 +154,11 @@ for n in range(len(file_path)):
         
         SubRunInfo[ ( int(run_si[sr]), int(subrun_si[sr]) ) ] = {"time":time, "duration":duration, "nNU":0, "nLD":0, "nMD":0, "nHD":0}
 
-    ei_file_path = f"/home/aklima/MSAnalysis/Codes/TextAll/{file_base_name}_EventInfo.txt"
+    ei_file_path = f"/home/aklima/MSAnalysis/Codes/ntuples_text/{file_base_name}_EventInfo.txt"
     if not os.path.exists(ei_file_path) or os.path.getsize(ei_file_path) == 0:
         #print(f"EventInfo file {ei_file_path} is empty. Skipping...")
         continue
-    run_ei, subrun_ei, event, start_ei, stop_ei, ocxz, ocyz, asymxz, asymyz, anglexz, angleyz, sigmaxz, sigmayz, altitude, azimuth, ntracks, ntracks_n, ntracks_a, xsec, trkden, vasym, timestamp = np.loadtxt(f"/home/aklima/MSAnalysis/Codes/TextAll/{file_base_name}_EventInfo.txt", unpack=True, ndmin=2)
+    run_ei, subrun_ei, event, start_ei, stop_ei, ocxz, ocyz, asymxz, asymyz, anglexz, angleyz, sigmaxz, sigmayz, altitude, azimuth, ntracks, ntracks_n, ntracks_a, xsec, trkden, vasym, timestamp = np.loadtxt(f"/home/aklima/MSAnalysis/Codes/ntuples_text/{file_base_name}_EventInfo.txt", unpack=True, ndmin=2)
     
     # Loop through events
     for evt in tqdm( range(len(run_ei)), desc="Parsing Events....", ascii=False, ncols=75 ):
@@ -273,47 +281,35 @@ for n in range(len(file_path)):
 
 # Azimuth distributions in subplots
 # Create a canvas
-canvas0 = ROOT.TCanvas("canvas0", "canvas0", 1200, 800)
+#canvas0 = ROOT.TCanvas("canvas0", "canvas0", 1200, 800)
+canvas0 = ROOT.TCanvas("canvas0", "canvas0", 600, 800)
 
 # Divide the canvas into a 2x2 grid
-canvas0.Divide(2, 3)
+#canvas0.Divide(2, 3)
+canvas0.Divide(1, 3)
 
 # Set line colors
-Az_BU.SetLineColor(ROOT.kOrange+2)
-Az_alt_l20.SetLineColor(ROOT.kRed)
+#Az_BU.SetLineColor(ROOT.kOrange+2)
+#Az_alt_l20.SetLineColor(ROOT.kRed)
 Az_LD.SetLineColor(ROOT.kGreen+2)
 Az_MD.SetLineColor(ROOT.kBlue)
 Az_HD.SetLineColor(ROOT.kMagenta)
 
-#Az_BU_DA.SetLineColor(ROOT.kBlack)
-#Az_GU_alt_l20_DA.SetLineColor(ROOT.kBlack)
-#Az_LD_DA.SetLineColor(ROOT.kBlack)
-#Az_MD_DA.SetLineColor(ROOT.kBlack)
-#Az_HD_DA.SetLineColor(ROOT.kBlack)
-
 # Set titles
-Az_BU.SetTitle("Non-Uniform Showers")
-Az_alt_l20.SetTitle("All Showers (Alt < 20)")
+#Az_BU.SetTitle("Non-Uniform Showers")
+#Az_alt_l20.SetTitle("All Showers (Alt < 20)")
 Az_LD.SetTitle("Low Density Uniform Showers")
 Az_MD.SetTitle("Medium Density Uniform Showers")
 Az_HD.SetTitle("High Density Uniform Showers")
 
-#Az_BU_DA.SetTitle("Non-Uniform Showers (Detector axis)")
-#Az_GU_alt_l20_DA.SetTitle("Uniform Showers (Alt < 20, Detector axis)")
-#Az_LD_DA.SetTitle("Low Density Uniform Showers (Detector axis)")
-#Az_MD_DA.SetTitle("Medium Density Uniform Showers (Detector axis)")
-#Az_HD_DA.SetTitle("High Density Uniform Showers (Detector axis)")
-
 # Draw each histogram in a separate pad
+#canvas0.cd(1)
+#Az_alt_l20.Draw("hist")
+#canvas0.cd(2)
+#Az_BU.Draw("hist")
+#canvas0.cd(3)
 canvas0.cd(1)
-Az_alt_l20.Draw("hist")
-#Az_BU_DA.Draw('same')
-canvas0.cd(2)
-Az_BU.Draw("hist")
-#Az_GU_alt_l20_DA.Draw('same')
-canvas0.cd(3)
 Az_LD.Draw("hist")
-#Az_LD_DA.Draw('same')
 canvas0.Update()  # Ensure the statistics box is created
 statBox = Az_LD.FindObject("stats")
 if statBox:
@@ -322,15 +318,15 @@ if statBox:
     statBox.SetY1NDC(0.7)  # Bottom boundary
     statBox.SetY2NDC(0.9)  # Top boundary
     statBox.Draw()
-canvas0.cd(4)
+#canvas0.cd(4)
+canvas0.cd(2)
 Az_MD.Draw("hist")
-#Az_MD_DA.Draw('same')
-canvas0.cd(5)
+#canvas0.cd(5)
+canvas0.cd(3)
 Az_HD.Draw("hist")
-#Az_HD_DA.Draw('same')
 canvas0.Draw()
 # Save the canvas as an image
-canvas0.SaveAs("./Plots/Azimuth_dist.png")
+canvas0.SaveAs("./Plots/Azimuth_dist_uniform_selections.png")
 
 # Uniform azimuth distribution
 canvas3 = ROOT.TCanvas("canvas3", "canvas3", 800, 600)
@@ -404,38 +400,194 @@ canvas2.SaveAs("./Plots/Altitude_dist.png")
 
 canvas1 = ROOT.TCanvas("canvas1","canvas1",800,600)
 canvas1.cd()
+# --- Style for axes and overall appearance ---
+ROOT.gStyle.SetLineWidth(2)  # thicker axis/frame
+canvas1.SetLeftMargin(0.12)
+canvas1.SetBottomMargin(0.12)
+canvas1.SetRightMargin(0.08)
+canvas1.SetTopMargin(0.12)
+
 #RA_BU.SetLineColor(ROOT.kOrange+7)
 #RA_alt_l20.SetLineColor(ROOT.kRed)
+#RA_LD.SetLineColor(ROOT.kGreen+2)
+RA_LD.SetMarkerStyle(20)
+#RA_LD.SetMarkerSize(1.2)
+RA_LD.SetMarkerColor(ROOT.kGreen+2)
 RA_LD.SetLineColor(ROOT.kGreen+2)
-RA_LD.Draw("hist E0")
+RA_LD.Draw("ep")
+RA_MD.SetMarkerStyle(20)
+#RA_MD.SetMarkerSize(1.2)
+RA_MD.SetMarkerColor(ROOT.kBlue)
 RA_MD.SetLineColor(ROOT.kBlue)
-RA_MD.Draw("same hist E0")
+RA_MD.Draw("same ep")
+RA_HD.SetMarkerStyle(20)
+#RA_HD.SetMarkerSize(1.2)
+RA_HD.SetMarkerColor(ROOT.kMagenta)
 RA_HD.SetLineColor(ROOT.kMagenta)
-RA_HD.Draw("same hist E0")
-#RA_LM.SetStats(0)
-RA_LD.GetYaxis().SetRangeUser(0,700)
-RA_LD.SetTitle("RA Distribution")
+RA_HD.Draw("same ep")
+RA_LD.SetStats(0)
+RA_MD.SetStats(0)
+RA_HD.SetStats(0)
+# Y-axis range and title
+RA_LD.GetYaxis().SetRangeUser(0,2100)
+#RA_LD.SetTitle("RA Distribution")
+RA_LD.GetXaxis().SetTitle("Right Ascension (degrees)")
+RA_LD.GetYaxis().SetTitle("Counts")
 #RA_BU.Draw("hist")
 #RA_alt_l20.Draw("same")
 #RA_LD.Draw("hist")
 
+for axis in [RA_LD.GetXaxis(), RA_LD.GetYaxis()]:
+    axis.SetLabelFont(62)       # bold labels
+    axis.SetLabelSize(0.05)     # bigger labels
+    axis.SetTitleFont(62)       # bold title
+    axis.SetTitleSize(0.05)     # bigger title
+    axis.SetTitleOffset(1.1)    # adjust spacing
+
+# Combine sum (clone)
 RA_sum = RA_LD.Clone("RA_sum")
 RA_sum.Add(RA_MD)
 RA_sum.Add(RA_HD)
+RA_sum.SetMarkerStyle(20)
+#RA_sum.SetMarkerSize(1.2)
+RA_sum.SetMarkerColor(ROOT.kBlack)
 RA_sum.SetLineColor(ROOT.kBlack)
-RA_sum.Draw("same hist E0")
+RA_sum.SetStats(0)
+RA_sum.Draw("same ep")
 
-# Add legend
-legend = ROOT.TLegend(0.5, 0.8, 0.6, 0.9)
-legend.AddEntry(RA_LD, "LD", "l")
-legend.AddEntry(RA_MD, "MD", "l")
-legend.AddEntry(RA_HD, "HD", "l")
-legend.AddEntry(RA_sum, "Sum", "l")
+# Legend
+legend = ROOT.TLegend(0.65, 0.75, 0.88, 0.88)
+legend.SetBorderSize(0)
+legend.SetFillStyle(0)
+legend.SetTextFont(62)   # bold legend font
+legend.SetTextSize(0.035)
+legend.AddEntry(RA_LD, "Low density", "ep")
+legend.AddEntry(RA_MD, "Medium density", "ep")
+legend.AddEntry(RA_HD, "High density", "ep")
+legend.AddEntry(RA_sum, "Sum", "ep")
 legend.Draw()
 
+canvas1.cd()
+prelim = ROOT.TLatex()
+prelim.SetNDC()                # normalized coordinates
+prelim.SetTextColor(ROOT.kBlue)
+prelim.SetTextSize(0.07)       # adjust size
+prelim.SetTextAlign(32)        # right-top alignment
+prelim.DrawLatex(0.93, 0.95, "NOvA Preliminary")
+
+canvas1.Update()
 #canvas1.Draw()
 canvas1.SaveAs("./Plots/RA_dist.png")
+canvas1.SaveAs("./Plots/RA_dist.eps")
+canvas1.SaveAs("./Plots/RA_dist.pdf")
+canvas1.SaveAs("./Plots/RA_dist.root")
 
+canvasRate = ROOT.TCanvas("canvasRate","Muon Rate vs RA",800,600)
+canvasRate.cd()
+
+# Making percentage histogram
+
+def make_deviation_hist(hist):
+    # compute mean bin content (average number of events per bin)
+    mean_content = hist.GetEntries() / hist.GetNbinsX()
+    dev_hist = hist.Clone(hist.GetName() + "_dev")
+    dev_hist.SetTitle(";Right Ascension (degrees);Deviation from mean (%)")
+    for i in range(1, dev_hist.GetNbinsX()+1):
+        bin_content = hist.GetBinContent(i)
+        if mean_content != 0:
+            new_content = 100.0 * (bin_content - mean_content) / mean_content
+            #new_content = bin_content / mean_content
+        else:
+            new_content = 0
+        dev_hist.SetBinContent(i, new_content)
+        # scale errors into percentage as well
+        bin_err = hist.GetBinError(i)
+        dev_hist.SetBinError(i, 100.0 * bin_err / mean_content if mean_content != 0 else 0)
+        #dev_hist.SetBinError(i, bin_err / mean_content if mean_content != 0 else 0)
+    return dev_hist
+
+# make transformed histograms
+RA_LD_dev  = make_deviation_hist(RA_LD)
+RA_MD_dev  = make_deviation_hist(RA_MD)
+RA_HD_dev  = make_deviation_hist(RA_HD)
+RA_sum_dev = make_deviation_hist(RA_sum)
+
+# Style histograms
+for hist, color in zip([RA_LD_dev, RA_MD_dev, RA_HD_dev, RA_sum_dev],
+        [ROOT.kGreen+2, ROOT.kBlue, ROOT.kMagenta, ROOT.kBlack]):
+    hist.SetMarkerStyle(20)
+    hist.SetMarkerColor(color)
+    hist.SetLineColor(color)
+    hist.SetLineWidth(2)
+    hist.SetStats(0)
+
+# Axis titles and range
+RA_LD_dev.GetXaxis().SetTitle("Right Ascension (degrees)")
+RA_LD_dev.GetYaxis().SetTitle("(#Delta N / <N>) %")
+RA_LD_dev.GetYaxis().SetRangeUser(-50, 50)
+
+# Draw histograms
+RA_LD_dev.Draw("EP")
+RA_MD_dev.Draw("same EP")
+RA_HD_dev.Draw("same EP")
+RA_sum_dev.Draw("same EP")
+
+# Legend
+legend = ROOT.TLegend(0.65, 0.75, 0.88, 0.88)
+legend.SetBorderSize(0)
+legend.SetFillStyle(0)
+legend.SetTextFont(62)
+legend.SetTextSize(0.035)
+legend.AddEntry(RA_LD_dev, "Low density", "ep")
+legend.AddEntry(RA_MD_dev, "Medium density", "ep")
+legend.AddEntry(RA_HD_dev, "High density", "ep")
+legend.AddEntry(RA_sum_dev, "Sum", "ep")
+legend.Draw()
+
+# NOvA Preliminary text
+prelim = ROOT.TLatex()
+prelim.SetNDC()
+prelim.SetTextColor(ROOT.kBlue)
+prelim.SetTextSize(0.07)
+prelim.SetTextAlign(32)   # right-top
+prelim.DrawLatex(0.93, 0.95, "NOvA Preliminary")
+
+canvasRate.Update()
+canvasRate.SaveAs("./Plots/RA_EventPrcnt.png")
+canvasRate.SaveAs("./Plots/RA_EventPrcnt.eps")
+canvasRate.SaveAs("./Plots/RA_EventPrcnt.pdf")
+canvasRate.SaveAs("./Plots/RA_EventPrcnt.root")
+
+# New: Individual canvases
+# -------------------------
+def draw_hist_on_canvas(hist, title, fname):
+    canvas = ROOT.TCanvas("c_" + hist.GetName(), title, 800, 600)
+    hist.Draw("EP")
+
+    # Axis titles and range
+    hist.GetXaxis().SetTitle("Right Ascension (degrees)")
+    hist.GetYaxis().SetTitle("(#Delta N / <N>) %")
+    hist.GetYaxis().SetRangeUser(-50, 50)
+
+    # NOvA Preliminary text
+    prelim = ROOT.TLatex()
+    prelim.SetNDC()
+    prelim.SetTextColor(ROOT.kBlue)
+    prelim.SetTextSize(0.07)
+    prelim.SetTextAlign(32)
+    prelim.DrawLatex(0.93, 0.95, "NOvA Preliminary")
+
+    canvas.Update()
+    canvas.SaveAs(f"./Plots/{fname}.png")
+    canvas.SaveAs(f"./Plots/{fname}.eps")
+    canvas.SaveAs(f"./Plots/{fname}.pdf")
+    canvas.SaveAs(f"./Plots/{fname}.root")
+
+# Call for each histogram
+draw_hist_on_canvas(RA_LD_dev,  "Muon Rate vs RA (Low density)",   "RA_EventPrcnt_LD")
+draw_hist_on_canvas(RA_MD_dev,  "Muon Rate vs RA (Medium density)","RA_EventPrcnt_MD")
+draw_hist_on_canvas(RA_HD_dev,  "Muon Rate vs RA (High density)",  "RA_EventPrcnt_HD")
+draw_hist_on_canvas(RA_sum_dev, "Muon Rate vs RA (Sum)",           "RA_EventPrcnt_Sum")
 
 # Multiplicity distribution
 canvasA = ROOT.TCanvas("canvasA","canvasA",800,600)
@@ -510,62 +662,136 @@ plt.close()
 
 
 # Polar plots for density
-fig, axs = plt.subplots(2, 3, subplot_kw=dict(polar=True), figsize=(12, 12))
+#fig, axs = plt.subplots(2, 3, subplot_kw=dict(polar=True), figsize=(12, 12))
 
 
 # Plotting AltAzl20
+#for azl20, altl20 in AltAz_alt_l20:
+#    theta1 = np.radians(azl20)
+#    r1 = altl20
+#    axs[0,0].plot(theta1, r1, marker='o', color='red', markersize=2)
+#axs[0,0].set_title('All Showers (Alt < 20)')
+
+# Plotting AltAzBU
+#for azbu, altbu in AltAz_BU:
+#    theta0 = np.radians(azbu)
+#    r0 = altbu
+#    axs[0,1].plot(theta0, r0, marker='o', color='orange', markersize=2)
+#axs[0,1].set_title('Non-Uniform Showers')
+
+# Plotting AltAz_L
+#for azl, altl in AltAz_L:
+#    theta0 = np.radians(azl)
+#    r0 = altl
+#    axs[1,0].plot(theta0, r0, marker='o', color='green', markersize=2)
+#axs[1,0].set_title('Low density showers')
+
+# Plotting AltAz_M
+#for azm, altm in AltAz_M:
+#    theta1 = np.radians(azm)
+#    r1 = altm
+#    axs[1,1].plot(theta1, r1, marker='o', color='blue', markersize=2)
+#axs[1,1].set_title('Medium density showers')
+
+# Plotting AltAz_H
+#for azh, alth in AltAz_H:
+#    theta2 = np.radians(azh)
+#    r2 = alth
+#    axs[1,2].plot(theta2, r2, marker='o', color='magenta', markersize=2)
+#axs[1,2].set_title('High density showers')
+
+#for row in axs:
+#    for subplot in row:
+#        # Skip the empty subplot at axs[0, 2]
+#       if subplot == axs[0, 2]:  
+#            subplot.axis('off')  # Turn off the axis for the empty subplot
+#            continue
+        #if subplot is not None:  # Skip the empty subplot
+#        subplot.set_theta_zero_location('N')  # Set the azimuth zero to the north
+#        subplot.set_theta_direction(-1)  # Set the azimuth direction to clockwise
+#        subplot.set_rlabel_position(60)  # Set radial label position
+#        subplot.set_rlim(91, 1)  # Invert the radial axis
+#        subplot.grid(True)
+#plt.savefig("./Plots/AltitudeAzimuth_density.png", bbox_inches='tight')
+#plt.close()
+
+# Polar plots for density (only two rejected categories)
+fig, axs = plt.subplots(1, 2, subplot_kw=dict(polar=True), figsize=(12, 6))
+
+# Plotting AltAzl20 (All Showers with Alt < 20)
 for azl20, altl20 in AltAz_alt_l20:
     theta1 = np.radians(azl20)
     r1 = altl20
-    axs[0,0].plot(theta1, r1, marker='o', color='red', markersize=2)
-axs[0,0].set_title('All Showers (Alt < 20)')
+    axs[0].plot(theta1, r1, marker='o', color='red', markersize=2)
+axs[0].set_title('All Showers (Alt < 20)')
 
-# Plotting AltAzBU
+# Plotting AltAzBU (Non-Uniform Showers)
 for azbu, altbu in AltAz_BU:
     theta0 = np.radians(azbu)
     r0 = altbu
-    axs[0,1].plot(theta0, r0, marker='o', color='orange', markersize=2)
-axs[0,1].set_title('Non-Uniform Showers')
+    axs[1].plot(theta0, r0, marker='o', color='orange', markersize=2)
+axs[1].set_title('Non-Uniform Showers')
+
+# Adjust polar subplot settings
+for subplot in axs:
+    subplot.set_theta_zero_location('N')   # Azimuth zero at North
+    subplot.set_theta_direction(-1)        # Clockwise
+    subplot.set_rlabel_position(60)        # Radial label position
+    subplot.set_rlim(91, 1)                # Invert radial axis
+    subplot.grid(True)
+
+plt.tight_layout()
+plt.savefig("./Plots/AltitudeAzimuth_rejected.png", bbox_inches='tight')
+plt.close()
+
+# Polar plots for density
+fig, axs = plt.subplots(1, 3, subplot_kw=dict(polar=True), figsize=(18, 6))
 
 # Plotting AltAz_L
 for azl, altl in AltAz_L:
     theta0 = np.radians(azl)
     r0 = altl
-    axs[1,0].plot(theta0, r0, marker='o', color='green', markersize=2)
-axs[1,0].set_title('Low density showers')
+    axs[0].plot(theta0, r0, marker='o', color='green', markersize=2)
+axs[0].set_title('Low density uniform Showers')
 
-# Plotting AltAz_M
+# Plotting AltAz_M (Medium density showers) on second column
 for azm, altm in AltAz_M:
     theta1 = np.radians(azm)
     r1 = altm
-    axs[1,1].plot(theta1, r1, marker='o', color='blue', markersize=2)
-axs[1,1].set_title('Medium density showers')
+    axs[1].plot(theta1, r1, marker='o', color='blue', markersize=2)
+axs[1].set_title('Medium density uniform showers')
 
-# Plotting AltAz_H
+# Plotting AltAz_H (High density showers) on third column
 for azh, alth in AltAz_H:
     theta2 = np.radians(azh)
     r2 = alth
-    axs[1,2].plot(theta2, r2, marker='o', color='magenta', markersize=2)
-axs[1,2].set_title('High density showers')
+    axs[2].plot(theta2, r2, marker='o', color='magenta', markersize=2)
+axs[2].set_title('High density uniform showers')
 
-for row in axs:
-    for subplot in row:
-        # Skip the empty subplot at axs[0, 2]
-        if subplot == axs[0, 2]:  
-            subplot.axis('off')  # Turn off the axis for the empty subplot
-            continue
-        #if subplot is not None:  # Skip the empty subplot
-        subplot.set_theta_zero_location('N')  # Set the azimuth zero to the north
-        subplot.set_theta_direction(-1)  # Set the azimuth direction to clockwise
-        subplot.set_rlabel_position(60)  # Set radial label position
-        subplot.set_rlim(91, 1)  # Invert the radial axis
-        subplot.grid(True)
+# Adjust polar subplot settings
+for subplot in axs:
+    subplot.set_theta_zero_location('N')   # Azimuth zero at North
+    subplot.set_theta_direction(-1)        # Clockwise
+    subplot.set_rlabel_position(65)        # Radial label position
+    subplot.set_rlim(91, 1)                # Invert radial axis
+    subplot.grid(True)
+    subplot.title.set_fontsize(18)
+    subplot.title.set_fontweight('bold')
+    subplot.tick_params(labelsize=12)  # larger tick labels
+    subplot.xaxis.set_tick_params(labelsize=12, width=1.5)  # azimuth ticks
+    subplot.yaxis.set_tick_params(labelsize=12, width=1.5)  # radial ticks
     
-#plt.subplots_adjust(wspace=0.1, hspace=0.1)
-#plt.savefig("./Plots/AltitudeAzimuth_density.png", bbox_inches='tight', pad_inches=0.05)
-#plt.savefig("./Plots/AltitudeAzimuth_density.png")
-plt.savefig("./Plots/AltitudeAzimuth_density.png", bbox_inches='tight')
+    # Thicker gridlines
+    for gridline in subplot.yaxis.get_gridlines() + subplot.xaxis.get_gridlines():
+        gridline.set_linewidth(1.2)  # increase grid line thickness
+        gridline.set_alpha(0.7)   
+
+plt.tight_layout()
+plt.savefig("./Plots/AltitudeAzimuth_density_uniform.png", bbox_inches='tight')
+plt.savefig("./Plots/AltitudeAzimuth_density_uniform.eps", bbox_inches='tight')
+plt.savefig("./Plots/AltitudeAzimuth_density_uniform.pdf", bbox_inches='tight')
 plt.close()
+
 
 # Polar plot for AltAz_H
 fig = plt.figure(figsize=(8, 8))
@@ -825,6 +1051,10 @@ canvasT5.Draw()
 canvasT5.SaveAs("./Plots/hRatio_Year.png")
 ######################################################
 canvasT6 = ROOT.TCanvas("canvasT6","canvasT6",800,600)
+canvasT6.SetLeftMargin(0.12)
+canvasT6.SetBottomMargin(0.12)
+canvasT6.SetRightMargin(0.10)
+canvasT6.SetTopMargin(0.12)
 
 #hRatio_Wrap = hEvts_Wrap.Clone()
 #hRatio_Wrap.Divide(hLiveTime_Wrap*(1/3600.))
@@ -837,43 +1067,89 @@ canvasT6 = ROOT.TCanvas("canvasT6","canvasT6",800,600)
 
 hRatioLD_Wrap = hEvtsLD_Wrap.Clone()
 hRatioLD_Wrap.Divide(hLiveTime_Wrap*(1/3600.))
-hRatioLD_Wrap.SetTitle("Event Rate (per hour);Wrap;Rate (h^{-1})")
+hRatioLD_Wrap.SetTitle(" ;Month;Event rate (h^{-1})")
+hRatioLD_Wrap.SetMarkerStyle(20)
+#hRatioLD_Wrap.SetMarkerSize(1.2)
+hRatioLD_Wrap.SetMarkerColor(ROOT.kGreen+2)
 hRatioLD_Wrap.SetLineColor(ROOT.kGreen+2)
+hRatioLD_Wrap.SetStats(0)
 
 hRatioMD_Wrap = hEvtsMD_Wrap.Clone()
 hRatioMD_Wrap.Divide(hLiveTime_Wrap*(1/3600.))
-hRatioMD_Wrap.SetTitle("Event Rate (per hour);Wrap;Rate (h^{-1})")
+hRatioMD_Wrap.SetTitle(" ;Month;Event rate (h^{-1})")
+hRatioMD_Wrap.SetMarkerStyle(20)
+#hRatioMD_Wrap.SetMarkerSize(1.2)
+hRatioMD_Wrap.SetMarkerColor(ROOT.kBlue)
 hRatioMD_Wrap.SetLineColor(ROOT.kBlue)
+hRatioMD_Wrap.SetStats(0)
 
 hRatioHD_Wrap = hEvtsHD_Wrap.Clone()
 hRatioHD_Wrap.Divide(hLiveTime_Wrap*(1/3600.))
-hRatioHD_Wrap.SetTitle("Event Rate (per hour);Wrap;Rate (h^{-1})")
+hRatioHD_Wrap.SetTitle(" ;Month;Event rate (h^{-1})")
+hRatioHD_Wrap.SetMarkerStyle(20)
+#hRatioHD_Wrap.SetMarkerSize(1.2)
+hRatioHD_Wrap.SetMarkerColor(ROOT.kMagenta)
 hRatioHD_Wrap.SetLineColor(ROOT.kMagenta)
+hRatioHD_Wrap.SetStats(0)
 
 hRatioSum_Wrap = hRatioLD_Wrap.Clone()
 hRatioSum_Wrap.Add(hRatioMD_Wrap)
 hRatioSum_Wrap.Add(hRatioHD_Wrap)
+hRatioSum_Wrap.SetMarkerStyle(20)
+#hRatioSum_Wrap.SetMarkerSize(1.2)
+hRatioSum_Wrap.SetMarkerColor(ROOT.kBlack)
 hRatioSum_Wrap.SetLineColor(ROOT.kBlack)
+hRatioSum_Wrap.SetStats(0)
+
+# --- Axis style ---
+for axis in [hRatioLD_Wrap.GetXaxis(), hRatioLD_Wrap.GetYaxis()]:
+    axis.SetLabelFont(62)   # bold
+    axis.SetLabelSize(0.05)
+    axis.SetTitleFont(62)   # bold
+    axis.SetTitleSize(0.05)
+    axis.SetTitleOffset(1.2)
 
 
 hRatioLD_Wrap.GetYaxis().SetRangeUser(0,2.5)
 #hRatio_Wrap.Draw("hist E0")
 #hRatioNU_Wrap.Draw("same hist E0")
-hRatioLD_Wrap.Draw("hist E0")
-hRatioMD_Wrap.Draw("same hist E0")
-hRatioHD_Wrap.Draw("same hist E0")
-hRatioSum_Wrap.Draw("same hist E0")
+hRatioLD_Wrap.Draw("ep")
+hRatioMD_Wrap.Draw("same ep")
+hRatioHD_Wrap.Draw("same ep")
+hRatioSum_Wrap.Draw("same ep")
 
 for i in range(12):
     hRatioLD_Wrap.GetXaxis().SetBinLabel(i + 1, month_abbr[i])
 
-canvasT6.Draw()
+canvasT6.cd()
 
-outFile = ROOT.TFile("output_ratios_with_fit.root", "RECREATE")
-canvasT6.Write()
-outFile.Close()
+# Legend
+legendT = ROOT.TLegend(0.65, 0.75, 0.88, 0.88)
+legendT.SetBorderSize(0)
+legendT.SetFillStyle(0)
+legendT.SetTextFont(62)   # bold legend font
+legendT.SetTextSize(0.035)
+legendT.AddEntry(hRatioLD_Wrap, "Low density", "ep")
+legendT.AddEntry(hRatioMD_Wrap, "Medium density", "ep")
+legendT.AddEntry(hRatioHD_Wrap, "High density", "ep")
+legendT.AddEntry(hRatioSum_Wrap, "Sum", "ep")
+legendT.Draw()
+
+prelim = ROOT.TLatex()
+prelim.SetNDC()                # normalized coordinates
+prelim.SetTextColor(ROOT.kBlue)
+prelim.SetTextSize(0.07)       # adjust size
+prelim.SetTextAlign(32)        # right-top alignment
+prelim.DrawLatex(0.93, 0.95, "NOvA Preliminary")
+
+canvasT6.Update()
+
+#canvasT6.Draw()
 
 canvasT6.SaveAs("./Plots/hRatio_wrap.png")
+canvasT6.SaveAs("./Plots/hRatio_wrap.eps")
+canvasT6.SaveAs("./Plots/hRatio_wrap.pdf")
+canvasT6.SaveAs("./Plots/hRatio_wrap.root")
 
 # In[16]:
 
@@ -882,4 +1158,8 @@ hSRDuration.Draw()
 canvasT7.Draw()
 canvasT7.SaveAs("./Plots/hSRDuration.png")
 
-
+outfile = TFile("AirshowerHistograms.root", RECREATE)
+canvasT6.Write("Timeseries")
+canvasRate.Write("MuonRatevsRA")
+canvas1.Write("RADist")
+outfile.Close()
