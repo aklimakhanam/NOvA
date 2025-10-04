@@ -121,7 +121,7 @@ for i in range(0,90):
 # Loop through files
 file_path = glob.glob("/home/aklima/MSAnalysis/Codes/ntuples_text/*_SubrunInfo.txt")
 for n in range(len(file_path)):
-#for n in range(0,500):
+#for n in range(0,100):
     base_name = os.path.basename(file_path[n])
     name_split = os.path.splitext(base_name)
     file_base_name = name_split[0]
@@ -328,6 +328,8 @@ canvas0.Draw()
 # Save the canvas as an image
 canvas0.SaveAs("./Plots/Azimuth_dist_uniform_selections.png")
 
+
+##########################################################
 # Uniform azimuth distribution
 canvas3 = ROOT.TCanvas("canvas3", "canvas3", 800, 600)
 Az_U.SetTitle("Uniform showers")
@@ -388,16 +390,7 @@ Alt_HD.Draw("hist")
 canvas2.Draw()
 # Save the canvas as an image
 canvas2.SaveAs("./Plots/Altitude_dist.png")
-
-
-# RA distributions in one plot
-
-#RA_BU.Scale(1.0 / RA_BU.Integral())
-#RA_GU_alt_l20.Scale(1.0 / RA_GU_alt_l20.Integral())
-#RA_LD.Scale(1.0 / RA_LD.Integral())
-#RA_MD.Scale(1.0 / RA_MD.Integral())
-#RA_HD.Scale(1.0 / RA_HD.Integral())
-
+###########################################
 canvas1 = ROOT.TCanvas("canvas1","canvas1",800,600)
 canvas1.cd()
 # --- Style for axes and overall appearance ---
@@ -491,22 +484,22 @@ def make_deviation_hist(hist):
     # compute mean bin content (average number of events per bin)
     mean_content = hist.GetEntries() / hist.GetNbinsX()
     dev_hist = hist.Clone(hist.GetName() + "_dev")
-    dev_hist.SetTitle(";Right Ascension (degrees);Deviation from mean (%)")
+    dev_hist.SetTitle(";Right Ascension (degrees); (#Delta N / <N>) %")
     for i in range(1, dev_hist.GetNbinsX()+1):
         bin_content = hist.GetBinContent(i)
         if mean_content != 0:
             new_content = 100.0 * (bin_content - mean_content) / mean_content
-            #new_content = bin_content / mean_content
+           
         else:
             new_content = 0
         dev_hist.SetBinContent(i, new_content)
         # scale errors into percentage as well
         bin_err = hist.GetBinError(i)
         dev_hist.SetBinError(i, 100.0 * bin_err / mean_content if mean_content != 0 else 0)
-        #dev_hist.SetBinError(i, bin_err / mean_content if mean_content != 0 else 0)
+       
     return dev_hist
 
-# make transformed histograms
+# make transformed histograms for RA
 RA_LD_dev  = make_deviation_hist(RA_LD)
 RA_MD_dev  = make_deviation_hist(RA_MD)
 RA_HD_dev  = make_deviation_hist(RA_HD)
@@ -524,7 +517,9 @@ for hist, color in zip([RA_LD_dev, RA_MD_dev, RA_HD_dev, RA_sum_dev],
 # Axis titles and range
 RA_LD_dev.GetXaxis().SetTitle("Right Ascension (degrees)")
 RA_LD_dev.GetYaxis().SetTitle("(#Delta N / <N>) %")
+#RA_LD_dev.GetYaxis().SetTitle("N / <N>")
 RA_LD_dev.GetYaxis().SetRangeUser(-50, 50)
+#RA_LD_dev.GetYaxis().SetRangeUser(0, 3)
 
 # Draw histograms
 RA_LD_dev.Draw("EP")
@@ -558,7 +553,7 @@ canvasRate.SaveAs("./Plots/RA_EventPrcnt.eps")
 canvasRate.SaveAs("./Plots/RA_EventPrcnt.pdf")
 canvasRate.SaveAs("./Plots/RA_EventPrcnt.root")
 
-# New: Individual canvases
+# New: Individual canvas
 # -------------------------
 def draw_hist_on_canvas(hist, title, fname):
     canvas = ROOT.TCanvas("c_" + hist.GetName(), title, 800, 600)
@@ -568,6 +563,7 @@ def draw_hist_on_canvas(hist, title, fname):
     hist.GetXaxis().SetTitle("Right Ascension (degrees)")
     hist.GetYaxis().SetTitle("(#Delta N / <N>) %")
     hist.GetYaxis().SetRangeUser(-50, 50)
+    #hist.GetYaxis().SetRangeUser(0, 3)
 
     # NOvA Preliminary text
     prelim = ROOT.TLatex()
@@ -588,6 +584,88 @@ draw_hist_on_canvas(RA_LD_dev,  "Muon Rate vs RA (Low density)",   "RA_EventPrcn
 draw_hist_on_canvas(RA_MD_dev,  "Muon Rate vs RA (Medium density)","RA_EventPrcnt_MD")
 draw_hist_on_canvas(RA_HD_dev,  "Muon Rate vs RA (High density)",  "RA_EventPrcnt_HD")
 draw_hist_on_canvas(RA_sum_dev, "Muon Rate vs RA (Sum)",           "RA_EventPrcnt_Sum")
+
+# Percentage histogram for Azimuth distribution
+
+canvas_dev = ROOT.TCanvas("canvas_dev","",800,600)
+canvas_dev.cd()
+
+# --- Style for axes and overall appearance ---
+ROOT.gStyle.SetLineWidth(2)  # thicker axis/frame
+canvas_dev.SetLeftMargin(0.12)
+canvas_dev.SetBottomMargin(0.12)
+canvas_dev.SetRightMargin(0.08)
+canvas_dev.SetTopMargin(0.12)
+
+#Create deviation histograms
+
+def make_dev_hist(hist):
+    # compute mean bin content (average number of events per bin)
+    mean_content = hist.GetEntries() / hist.GetNbinsX()
+    dev_hist = hist.Clone(hist.GetName() + "_dev")
+    dev_hist.SetTitle("; Azimuth; (#Delta N / <N>) %")
+    for i in range(1, dev_hist.GetNbinsX()+1):
+        bin_content = hist.GetBinContent(i)
+        if mean_content != 0:
+            new_content = 100.0 * (bin_content - mean_content) / mean_content
+          
+        else:
+            new_content = 0
+        dev_hist.SetBinContent(i, new_content)
+        # scale errors into percentage as well
+        bin_err = hist.GetBinError(i)
+        dev_hist.SetBinError(i, 100.0 * bin_err / mean_content if mean_content != 0 else 0)
+
+    return dev_hist
+
+dev_LD = make_dev_hist(Az_LD)
+dev_MD = make_dev_hist(Az_MD)
+dev_HD = make_dev_hist(Az_HD)
+
+# Style histograms
+for hist, color in zip([dev_LD, dev_MD, dev_HD],
+        [ROOT.kGreen+2, ROOT.kBlue, ROOT.kMagenta]):
+    hist.SetMarkerStyle(20)
+    hist.SetMarkerColor(color)
+    hist.SetLineColor(color)
+    hist.SetLineWidth(2)
+    hist.SetStats(0)
+
+# Axis titles and range
+dev_LD.GetXaxis().SetTitle("Azimuth")
+dev_LD.GetYaxis().SetTitle("(#Delta N / <N>) %")
+dev_LD.GetYaxis().SetRangeUser(-100,100)
+
+# Draw histograms
+dev_LD.Draw("EP")
+dev_MD.Draw("same EP")
+dev_HD.Draw("same EP")
+
+
+# Legend
+legend = ROOT.TLegend(0.65, 0.75, 0.88, 0.88)
+legend.SetBorderSize(0)
+legend.SetFillStyle(0)
+legend.SetTextFont(62)
+legend.SetTextSize(0.035)
+legend.AddEntry(dev_LD, "Low density", "ep")
+legend.AddEntry(dev_MD, "Medium density", "ep")
+legend.AddEntry(dev_HD, "High density", "ep")
+
+legend.Draw()
+
+# NOvA Preliminary text
+prelim = ROOT.TLatex()
+prelim.SetNDC()
+prelim.SetTextColor(ROOT.kBlue)
+prelim.SetTextSize(0.07)
+prelim.SetTextAlign(32)   # right-top
+prelim.DrawLatex(0.93, 0.95, "NOvA Preliminary")
+
+# Update and save the canvas
+canvas_dev.Update()
+canvas_dev.SaveAs("./Plots/Azimuth_dev_uniform_selections.png")
+canvas_dev.SaveAs("./Plots/Azimuth_dev_uniform_selections.root")
 
 # Multiplicity distribution
 canvasA = ROOT.TCanvas("canvasA","canvasA",800,600)
@@ -1038,7 +1116,7 @@ hRatioHD_Year.Draw("same hist E0")
 
 # Add year labels to the x-axis (every 12 bins)
 labels = []
-for i in range(9):  # For 9 years (since you have 108 months)
+for i in range(9):  # For 9 years (since we have 108 months)
     year = 2015 + i
     label = str(year)
     labels.append(label)
@@ -1150,6 +1228,130 @@ canvasT6.SaveAs("./Plots/hRatio_wrap.png")
 canvasT6.SaveAs("./Plots/hRatio_wrap.eps")
 canvasT6.SaveAs("./Plots/hRatio_wrap.pdf")
 canvasT6.SaveAs("./Plots/hRatio_wrap.root")
+
+# Calculate event rates per hour
+
+canvasDev = ROOT.TCanvas("canvasDev", "Deviation Histograms", 800, 600)
+canvasDev.SetLeftMargin(0.12)
+canvasDev.SetBottomMargin(0.12)
+canvasDev.SetRightMargin(0.10)
+canvasDev.SetTopMargin(0.12)
+
+def make_rate_hist(hEvts, hLiveTime, color):
+    hRate = hEvts.Clone()
+    hRate.Divide(hLiveTime*(1/3600.))
+    hRate.SetTitle(" ;Month;Event rate (h^{-1})")
+    hRate.SetMarkerStyle(20)
+    hRate.SetMarkerColor(color)
+    hRate.SetLineColor(color)
+    hRate.SetStats(0)
+    return hRate
+
+hRatioLD_Wrap = make_rate_hist(hEvtsLD_Wrap, hLiveTime_Wrap, ROOT.kGreen+2)
+hRatioMD_Wrap = make_rate_hist(hEvtsMD_Wrap, hLiveTime_Wrap, ROOT.kBlue)
+hRatioHD_Wrap = make_rate_hist(hEvtsHD_Wrap, hLiveTime_Wrap, ROOT.kMagenta)
+
+# Sum histogram
+hRatioSum_Wrap = hRatioLD_Wrap.Clone()
+hRatioSum_Wrap.Add(hRatioMD_Wrap)
+hRatioSum_Wrap.Add(hRatioHD_Wrap)
+hRatioSum_Wrap.SetMarkerColor(ROOT.kBlack)
+hRatioSum_Wrap.SetLineColor(ROOT.kBlack)
+
+# -------------------------------
+# Compute overall mean of bin contents
+# -------------------------------
+def get_overall_mean(h):
+    n_bins = h.GetNbinsX()
+    total = sum(h.GetBinContent(i) for i in range(1, n_bins+1))
+    return total / n_bins
+
+histograms = {
+    "LD": hRatioLD_Wrap,
+    "MD": hRatioMD_Wrap,
+    "HD": hRatioHD_Wrap,
+    "Sum": hRatioSum_Wrap
+}
+
+means = {name: get_overall_mean(hist) for name, hist in histograms.items()}
+
+for name, mean in means.items():
+    print(f"Overall mean rate for {name}: {mean:.3f} h^-1")
+
+# -------------------------------
+# Create deviation histograms (%)
+# -------------------------------
+def make_deviation_hist(h):
+    mean = get_overall_mean(h)
+    h_dev = h.Clone(h.GetName() + "_dev")
+    n_bins = h.GetNbinsX()
+    for i in range(1, n_bins+1):
+        y = h.GetBinContent(i)
+        dev = (y - mean) / mean * 100  # percent deviation
+        h_dev.SetBinContent(i, dev)
+    return h_dev
+
+hDev_LD  = make_deviation_hist(hRatioLD_Wrap)
+hDev_MD  = make_deviation_hist(hRatioMD_Wrap)
+hDev_HD  = make_deviation_hist(hRatioHD_Wrap)
+hDev_Sum = make_deviation_hist(hRatioSum_Wrap)
+
+# Draw first histogram with axis
+hDev_Sum.SetTitle(" ;Month; #Delta R / <R>) %")
+hDev_Sum.SetMarkerStyle(20)
+hDev_Sum.SetMarkerColor(ROOT.kBlack)
+hDev_Sum.SetLineColor(ROOT.kBlack)
+hDev_Sum.SetStats(0)
+hDev_Sum.GetYaxis().SetRangeUser(-15,15)
+hDev_Sum.Draw("EP")  # axis + points + line
+
+# --- Axis style ---
+for axis in [hDev_Sum.GetXaxis(), hDev_Sum.GetYaxis()]:
+    axis.SetLabelFont(62)
+    axis.SetLabelSize(0.05)
+    axis.SetTitleFont(62)
+    axis.SetTitleSize(0.05)
+    axis.SetTitleOffset(1.2)
+
+# Draw other histograms on same canvas
+for h, color in zip([hDev_LD, hDev_MD, hDev_HD], [ROOT.kGreen+2, ROOT.kBlue, ROOT.kMagenta]):
+    h.SetMarkerStyle(20)
+    h.SetMarkerColor(color)
+    h.SetLineColor(color)   
+    h.Draw("EP SAME")
+
+# --- Set bin labels (assuming 12 months) ---
+#month_abbr = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+for i in range(12):
+    hDev_Sum.GetXaxis().SetBinLabel(i + 1, month_abbr[i])
+
+canvasDev.cd()
+
+# --- Legend ---
+legend = ROOT.TLegend(0.65,0.75,0.88,0.88)
+legend.SetBorderSize(0)
+legend.SetFillStyle(0)
+legend.SetTextFont(62)
+legend.SetTextSize(0.035)
+legend.AddEntry(hDev_LD, "LD", "lp")
+legend.AddEntry(hDev_MD, "MD", "lp")
+legend.AddEntry(hDev_HD, "HD", "lp")
+legend.AddEntry(hDev_Sum, "Sum", "lp")
+legend.Draw()
+
+# NOvA Preliminary text
+prelim = ROOT.TLatex()
+prelim.SetNDC()
+prelim.SetTextColor(ROOT.kBlue)
+prelim.SetTextSize(0.07)
+prelim.SetTextAlign(32)   # right-top
+prelim.DrawLatex(0.93, 0.95, "NOvA Preliminary")
+
+canvasDev.Update()
+canvasDev.SaveAs("./Plots/DeviationHistograms.png")
+canvasDev.SaveAs("./Plots/DeviationHistograms.root")
+
+
 
 # In[16]:
 
