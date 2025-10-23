@@ -21,13 +21,13 @@ from calendar import month_abbr
 
 # In[2]:
 
-def Preliminary2():
-    prelim = ROOT.TLatex(0.935, 0.95, "NOvA Preliminary")
-    prelim.SetTextColor(ROOT.kBlue)
-    prelim.SetNDC()           # use normalized device coordinates
-    prelim.SetTextSize(2.0/30.0)
-    prelim.SetTextAlign(32)
-    prelim.Draw()
+#def Preliminary2():
+#    prelim = ROOT.TLatex(0.935, 0.95, "NOvA Preliminary")
+#    prelim.SetTextColor(ROOT.kBlue)
+#    prelim.SetNDC()           # use normalized device coordinates
+#    prelim.SetTextSize(2.0/30.0)
+#    prelim.SetTextAlign(32)
+#    prelim.Draw()
 
 Multiplicity = ROOT.TH1D("Multiplicity", "Multiplicity distribution (opposite through-goers); Tracks per event; Counts", 200, 0, 400)
 TrackDensity = ROOT.TH1D("TrackDensity", "Track density distribution (all tracks); Track density (m^{-2})", 50, 0, 1)
@@ -108,6 +108,28 @@ RAMD = []
 DECMD = []
 RAHD = []
 DECHD = []
+
+East_NU = 0
+East_Sum = 0
+East_LD = 0
+East_MD = 0
+East_HD = 0
+West_Sum = 0
+West_NU = 0
+West_LD = 0
+West_MD = 0
+West_HD = 0
+North_Sum = 0
+North_NU = 0
+North_LD = 0
+North_MD = 0
+North_HD = 0
+South_Sum = 0
+South_NU = 0
+South_LD = 0
+South_MD = 0
+South_HD = 0
+
 DetL = 60
 DetW = 15.6
 DetH = 15.6
@@ -208,7 +230,7 @@ for n in range(len(file_path)):
                 AltAz_alt_l20.append((az,alt))
                 #AltAz_GU_alt_l20.append((anglexz[evt],alt))
                 RAl20.append(RA)
-                DECl20.append(DEC)
+                DECl20.append(DEC) 
             else:
                 Az_BU.Fill(az)
                 Az_BU_DA.Fill(anglexz[evt])
@@ -221,10 +243,18 @@ for n in range(len(file_path)):
                 hEvtsNU_Month.Fill( (year-2015)*12 + month-1 )
                 hEvtsNU_Wrap.Fill( month-1 )
                 SubRunInfo[ ( int(run_ei[evt]), int(subrun_ei[evt]) ) ]["nNU"] += 1
+                if (az >= 80 and az <= 100): East_NU += 1
+                elif (az >= 260 and az <= 280): West_NU += 1
+                elif (az >= 170 and az <= 190): South_NU += 1
+                elif ((az >= 0 and az <= 10) or (az >= 350 and az <= 360)): North_NU += 1
         #elif((asymxz[evt]**2 + asymyz[evt]**2) <= 0.08 and vasym[evt] >= -0.05 and vasym[evt] <= 0.2):
         else:
             Az_U.Fill(az)
             Az_U_DA.Fill(anglexz[evt])
+            if (az >= 80 and az <= 100): East_Sum += 1
+            elif (az >= 260 and az <= 280): West_Sum +=1
+            elif (az >= 170 and az <= 190): South_Sum += 1
+            elif ((az >= 0 and az <= 10) or (az >= 350 and az <= 360)): North_Sum += 1
             if(alt < 20):
                 Az_alt_l20.Fill(az)
                 Az_alt_l20_DA.Fill(anglexz[evt])
@@ -246,6 +276,10 @@ for n in range(len(file_path)):
                 hEvtsLD_Month.Fill( (year-2015)*12 + month-1 )
                 hEvtsLD_Wrap.Fill( month-1 )
                 SubRunInfo[ ( int(run_ei[evt]), int(subrun_ei[evt]) ) ]["nLD"] += 1
+                if (az >= 80 and az <= 100): East_LD += 1
+                elif (az >= 260 and az <= 280): West_LD +=1
+                elif (az >= 170 and az <= 190): South_LD += 1
+                elif ((az >= 0 and az <= 10) or (az >= 350 and az <= 360)): North_LD += 1
             if (alt > 20 and trkden[evt] > 0.2 and trkden[evt] <= 0.3):
                 AltAz_M.append((az,alt))
                 #AltAz_M.append((anglexz[evt],alt))
@@ -258,6 +292,10 @@ for n in range(len(file_path)):
                 hEvtsMD_Month.Fill( (year-2015)*12 + month-1 )
                 hEvtsMD_Wrap.Fill( month-1 )
                 SubRunInfo[ ( int(run_ei[evt]), int(subrun_ei[evt]) ) ]["nMD"] += 1
+                if (az >= 80 and az <= 100): East_MD += 1
+                elif (az >= 260 and az <= 280): West_MD +=1
+                elif (az >= 170 and az <= 190): South_MD += 1
+                elif ((az >= 0 and az <= 10) or (az >= 350 and az <= 360)): North_MD += 1
             if (alt > 20 and trkden[evt] > 0.3):
                 AltAz_H.append((az,alt))
                 #AltAz_H.append((anglexz[evt],alt))
@@ -270,10 +308,38 @@ for n in range(len(file_path)):
                 hEvtsHD_Month.Fill( (year-2015)*12 + month-1 )
                 hEvtsHD_Wrap.Fill( month-1 )
                 SubRunInfo[ ( int(run_ei[evt]), int(subrun_ei[evt]) ) ]["nHD"] += 1
+                if (az >= 80 and az <= 100): East_HD += 1
+                elif (az >= 260 and az <= 280): West_HD +=1
+                elif (az >= 170 and az <= 190): South_HD += 1
+                elif ((az >= 0 and az <= 10) or (az >= 350 and az <= 360)): North_HD += 1
             if(alt > 20 and ntracks_n[evt] <=120):
                 AltAz_LM.append((az,alt))
             if(alt > 20 and ntracks_n[evt] > 120):
                 AltAz_HM.append((az,alt))
+
+
+with open("counts.txt", "w") as f:
+    f.write("Counter Summary:\n")
+    f.write(f"East_NU: {East_NU}\n")
+    f.write(f"East_Sum: {East_Sum}\n")
+    f.write(f"East_LD: {East_LD}\n")
+    f.write(f"East_MD: {East_MD}\n")
+    f.write(f"East_HD: {East_HD}\n")
+    f.write(f"West_NU: {West_NU}\n")
+    f.write(f"West_Sum: {West_Sum}\n")
+    f.write(f"West_LD: {West_LD}\n")
+    f.write(f"West_MD: {West_MD}\n")
+    f.write(f"West_HD: {West_HD}\n")
+    f.write(f"North_NU: {North_NU}\n")
+    f.write(f"North_Sum: {North_Sum}\n")
+    f.write(f"North_LD: {North_LD}\n")
+    f.write(f"North_MD: {North_MD}\n")
+    f.write(f"North_HD: {North_HD}\n")
+    f.write(f"South_NU: {South_NU}\n")
+    f.write(f"South_Sum: {South_Sum}\n")
+    f.write(f"South_LD: {South_LD}\n")
+    f.write(f"South_MD: {South_MD}\n")
+    f.write(f"South_HD: {South_HD}\n")
 
 # ## Histograms
 
@@ -1179,7 +1245,7 @@ hRatioSum_Wrap.SetMarkerColor(ROOT.kBlack)
 hRatioSum_Wrap.SetLineColor(ROOT.kBlack)
 hRatioSum_Wrap.SetStats(0)
 
-# --- Axis style ---
+# Axis style
 for axis in [hRatioLD_Wrap.GetXaxis(), hRatioLD_Wrap.GetYaxis()]:
     axis.SetLabelFont(62)   # bold
     axis.SetLabelSize(0.05)
@@ -1297,12 +1363,12 @@ hDev_HD  = make_deviation_hist(hRatioHD_Wrap)
 hDev_Sum = make_deviation_hist(hRatioSum_Wrap)
 
 # Draw first histogram with axis
-hDev_Sum.SetTitle(" ;Month; #Delta R / <R>) %")
+hDev_Sum.SetTitle(" ;Month; (#Delta R / <R>) %")
 hDev_Sum.SetMarkerStyle(20)
 hDev_Sum.SetMarkerColor(ROOT.kBlack)
 hDev_Sum.SetLineColor(ROOT.kBlack)
 hDev_Sum.SetStats(0)
-hDev_Sum.GetYaxis().SetRangeUser(-15,15)
+hDev_Sum.GetYaxis().SetRangeUser(-30,30)
 hDev_Sum.Draw("EP")  # axis + points + line
 
 # --- Axis style ---
@@ -1320,14 +1386,14 @@ for h, color in zip([hDev_LD, hDev_MD, hDev_HD], [ROOT.kGreen+2, ROOT.kBlue, ROO
     h.SetLineColor(color)   
     h.Draw("EP SAME")
 
-# --- Set bin labels (assuming 12 months) ---
+# Set bin labels 
 #month_abbr = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 for i in range(12):
     hDev_Sum.GetXaxis().SetBinLabel(i + 1, month_abbr[i])
 
 canvasDev.cd()
 
-# --- Legend ---
+#Legend
 legend = ROOT.TLegend(0.65,0.75,0.88,0.88)
 legend.SetBorderSize(0)
 legend.SetFillStyle(0)
@@ -1338,6 +1404,34 @@ legend.AddEntry(hDev_MD, "MD", "lp")
 legend.AddEntry(hDev_HD, "HD", "lp")
 legend.AddEntry(hDev_Sum, "Sum", "lp")
 legend.Draw()
+
+# Cosine fit function
+cosine_fit = ROOT.TF1("cosine_fit", "[0]*cos(2*TMath::Pi()/12*x + [1]) + [2]", 0.5, 12.5)
+cosine_fit.SetParameters(10, 0, 0)  # amplitude=10%, period=12 months, phase=0, offset=0
+
+#Fit each histogram
+fits = {}
+for name, h in zip(["LD", "MD", "HD", "Sum"], [hDev_LD, hDev_MD, hDev_HD, hDev_Sum]):
+    f = cosine_fit.Clone(f"cosine_fit_{name}")
+    h.Fit(f, "R")  # fit in range
+    fits[name] = f
+
+# Draw fit curves
+for name, (h, color) in zip(["LD", "MD", "HD", "Sum"],
+                            zip([hDev_LD, hDev_MD, hDev_HD, hDev_Sum],
+                                [ROOT.kGreen+2, ROOT.kBlue, ROOT.kMagenta, ROOT.kBlack])):
+    fits[name].SetLineColor(color)
+    fits[name].SetLineStyle(1)
+    fits[name].Draw("SAME")
+
+#Save fit parameters to counts.txt
+with open("counts.txt", "a") as f_out:  # append mode
+    f_out.write("\nCosine Fit Results:\n")
+    for name, f in fits.items():
+        A  = f.GetParameter(0)
+        phi = f.GetParameter(1)
+        C  = f.GetParameter(2)
+        f_out.write(f"{name} fit: A={A:.2f}, phi={phi:.2f}, C={C:.2f}\n")
 
 # NOvA Preliminary text
 prelim = ROOT.TLatex()
