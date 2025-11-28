@@ -1,7 +1,3 @@
-/* Read_muons.C an example root script to read the TTree of NOvA cosmic tracks 
-   created by CosmicStudies/CosmicNtuple_module.cc
-   Alec Habig <ahabig@umn.edu>, January 14, 2022 */
-
 /* HOWTO: change the strings infile and outfile point to based on your needs.
    This macro will TChain together infiles with a wildcard.
 
@@ -10,7 +6,7 @@
    things, most are "per track" so repeated *ntracks times per event.
    Examples of histogramming both are below */
 
-/* NOTE - this is a root6 macro.  root5's way of accessing TTrees is a PITA */
+/* NOTE - this is a root6 macro. */
 
 #include "TFile.h"
 #include "TTree.h"
